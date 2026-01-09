@@ -24,8 +24,25 @@ export interface ModelPricing {
   batch_pricing: BatchPricing | null;
   context_length: number | null;
   max_output_tokens: number | null;
+  is_open_source: boolean | null;
   capabilities: string[];
+  input_modalities: string[];
+  output_modalities: string[];
   last_updated: string;
+}
+
+export interface PricingUpdate {
+  input?: number | null;
+  output?: number | null;
+  cached_input?: number | null;
+}
+
+export interface ModelUpdate {
+  context_length?: number | null;
+  max_output_tokens?: number | null;
+  is_open_source?: boolean | null;
+  pricing?: PricingUpdate;
+  capabilities?: string[];
 }
 
 export interface ProviderInfo {
@@ -55,5 +72,11 @@ export interface SortConfig {
 export interface Filters {
   provider: string | null;
   capability: string | null;
+  family: string | null;
   search: string;
+}
+
+export interface ModelFamily {
+  name: string;
+  count: number;
 }

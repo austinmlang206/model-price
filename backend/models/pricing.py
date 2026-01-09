@@ -1,28 +1,29 @@
 """Pydantic models for pricing data."""
 
 from datetime import datetime
+from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 
 class Pricing(BaseModel):
     """Price info (USD per million tokens/units)."""
 
-    input: float | None = None
-    output: float | None = None
-    cached_input: float | None = None
-    cached_write: float | None = None
-    reasoning: float | None = None
-    image_input: float | None = None
-    audio_input: float | None = None
-    audio_output: float | None = None
-    embedding: float | None = None
+    input: Optional[float] = None
+    output: Optional[float] = None
+    cached_input: Optional[float] = None
+    cached_write: Optional[float] = None
+    reasoning: Optional[float] = None
+    image_input: Optional[float] = None
+    audio_input: Optional[float] = None
+    audio_output: Optional[float] = None
+    embedding: Optional[float] = None
 
 
 class BatchPricing(BaseModel):
     """Batch processing discounted prices."""
 
-    input: float | None = None
-    output: float | None = None
+    input: Optional[float] = None
+    output: Optional[float] = None
 
 
 class ModelPricing(BaseModel):
@@ -33,10 +34,13 @@ class ModelPricing(BaseModel):
     model_id: str  # Original model ID
     model_name: str  # Display name
     pricing: Pricing
-    batch_pricing: BatchPricing | None = None
-    context_length: int | None = None
-    max_output_tokens: int | None = None
-    capabilities: list[str] = []  # ["text", "vision", "audio", "embedding"]
+    batch_pricing: Optional[BatchPricing] = None
+    context_length: Optional[int] = None
+    max_output_tokens: Optional[int] = None
+    is_open_source: Optional[bool] = None  # True if weights are downloadable
+    capabilities: List[str] = []  # ["text", "vision", "audio", "embedding"]
+    input_modalities: List[str] = []  # ["text", "image", "audio", "video", "file"]
+    output_modalities: List[str] = []  # ["text", "image", "audio", "video", "embedding"]
     last_updated: datetime
 
 
@@ -45,7 +49,7 @@ class PricingDatabase(BaseModel):
 
     version: str = "1.0"
     last_refresh: datetime
-    models: list[ModelPricing] = []
+    models: List[ModelPricing] = []
 
 
 class ProviderInfo(BaseModel):
@@ -54,4 +58,29 @@ class ProviderInfo(BaseModel):
     name: str
     display_name: str
     model_count: int
-    last_updated: datetime | None = None
+    last_updated: Optional[datetime] = None
+
+
+class ProviderFile(BaseModel):
+    """Structure for per-provider JSON file (providers/*.json)."""
+
+    provider: str
+    last_updated: datetime
+    models: List[ModelPricing] = []
+
+
+class ProviderIndexEntry(BaseModel):
+    """Entry in the index file for a single provider."""
+
+    file: str  # Relative path like "providers/openai.json"
+    model_count: int
+    last_updated: datetime
+
+
+class IndexFile(BaseModel):
+    """Structure for index.json - tracks all provider files."""
+
+    version: str = "2.0"
+    last_refresh: datetime
+    providers: Dict[str, ProviderIndexEntry] = {}
+    total_models: int = 0

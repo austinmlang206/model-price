@@ -4,6 +4,9 @@ from .pricing import (
     ModelPricing,
     PricingDatabase,
     ProviderInfo,
+    ProviderFile,
+    ProviderIndexEntry,
+    IndexFile,
 )
 
 __all__ = [
@@ -12,4 +15,7 @@ __all__ = [
     "ModelPricing",
     "PricingDatabase",
     "ProviderInfo",
+    "ProviderFile",
+    "ProviderIndexEntry",
+    "IndexFile",
 ]

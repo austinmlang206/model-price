@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 import { useModels } from './hooks/useModels';
 import {
@@ -7,20 +8,28 @@ import {
   RefreshButton,
   ViewToggle,
 } from './components';
+import { APP_VERSION } from './config';
+
+interface AppProps {
+  editable?: boolean;
+}
 
 function formatPrice(price: number): string {
   if (price === 0) return 'Free';
   return '$' + price.toFixed(2);
 }
 
-function App() {
+function App({ editable = false }: AppProps) {
+  const navigate = useNavigate();
   const {
     models,
     providers,
+    families,
     stats,
     loading,
     error,
     refreshing,
+    updating,
     view,
     filters,
     sortConfig,
@@ -28,7 +37,12 @@ function App() {
     setFilters,
     handleSort,
     refresh,
+    updateModel,
   } = useModels();
+
+  const handleModeToggle = () => {
+    navigate(editable ? '/' : '/admin');
+  };
 
   return (
     <div className="app">
@@ -38,11 +52,20 @@ function App() {
           <div className="logo">
             <span className="logo-icon">⬡</span>
             <h1>Model Price</h1>
-            <span className="version mono">v0.2.0</span>
+            <span className="version mono">v{APP_VERSION}</span>
           </div>
           <p className="tagline">AI 模型定价一览表</p>
         </div>
         <div className="header-glow"></div>
+
+        {/* Mode Toggle */}
+        <button
+          className={`mode-toggle ${editable ? 'admin-mode' : 'view-mode'}`}
+          onClick={handleModeToggle}
+        >
+          <span className="mode-icon">{editable ? '👁️' : '✏️'}</span>
+          <span className="mode-label">{editable ? '退出编辑' : '进入编辑'}</span>
+        </button>
       </header>
 
       {/* Stats Bar */}
@@ -61,6 +84,7 @@ function App() {
           <span className="stat-label">平均输入价格</span>
           <span className="stat-value mono">
             {formatPrice(stats?.avg_input_price || 0)}
+            <span className="stat-unit">/M</span>
           </span>
         </div>
         <div className="stat-divider"></div>
@@ -68,6 +92,7 @@ function App() {
           <span className="stat-label">平均输出价格</span>
           <span className="stat-value mono">
             {formatPrice(stats?.avg_output_price || 0)}
+            <span className="stat-unit">/M</span>
           </span>
         </div>
       </section>
@@ -95,6 +120,7 @@ function App() {
                 filters={filters}
                 onFiltersChange={setFilters}
                 providers={providers}
+                families={families}
               />
               <div className="controls-right">
                 <RefreshButton refreshing={refreshing} onRefresh={refresh} />
@@ -119,6 +145,8 @@ function App() {
                 models={models}
                 sortConfig={sortConfig}
                 onSort={handleSort}
+                onUpdateModel={editable ? updateModel : undefined}
+                updating={updating}
               />
             )}
 

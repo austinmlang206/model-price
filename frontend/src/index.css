@@ -7,36 +7,77 @@
   --bg-card: #ffffff;
   --bg-card-hover: #f7f5f2;
   --bg-accent: #f0ebe4;
-  
+  --bg-table-header: #f7f5f2;
+  --bg-table-stripe: rgba(240, 235, 228, 0.4);
+
   --text-primary: #1a1a1a;
   --text-secondary: #5c5c5c;
   --text-muted: #9a9a9a;
-  
+
   /* Accent colors - sophisticated palette */
   --accent-primary: #e85d04;
   --accent-secondary: #dc2f02;
   --accent-tertiary: #f48c06;
-  --accent-success: #2d6a4f;
+  --accent-success: #16a34a;
+  --accent-danger: #dc2626;
   --accent-info: #0077b6;
-  
+
   /* Provider colors - refined */
   --openai-color: #10a37f;
   --anthropic-color: #d97757;
   --google-color: #4285f4;
   --deepseek-color: #0096c7;
   --meta-color: #0866ff;
-  
+  --aws-color: #ff9900;
+  --azure-color: #0078d4;
+  --openrouter-color: #6366f1;
+  --xai-color: #1d9bf0;
+
+  /* Badge/Tag system */
+  --badge-radius: 4px;
+  --badge-padding: 2px 6px;
+  --badge-font-size: 10px;
+  --badge-font-weight: 500;
+
+  /* Typography scale - body text */
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-base: 12px;
+  --font-size-md: 13px;
+  --font-size-lg: 14px;
+
+  /* Typography scale - display/headings */
+  --font-size-h3: 1.15rem;
+  --font-size-h2: 1.35rem;
+  --font-size-h1: 1.75rem;
+  --font-size-display-sm: 2.5rem;
+  --font-size-display: 3rem;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
   --border-color: #e8e4de;
   --border-hover: #d4cfc6;
+  --border-light: rgba(232, 228, 222, 0.6);
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
-  
-  --radius: 16px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
-  
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

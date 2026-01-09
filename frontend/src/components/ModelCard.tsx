@@ -1,35 +1,12 @@
 import { useState } from 'react';
 import type { ModelPricing } from '../types/pricing';
+import { CapabilityList } from './CapabilityBadge';
+import { getProviderDisplayName, getProviderColor, calculatePriceBarWidth } from '../config';
 
 interface ModelCardProps {
   model: ModelPricing;
   index: number;
 }
-
-const providerColors: Record<string, string> = {
-  aws_bedrock: 'var(--aws-color)',
-  openai: 'var(--openai-color)',
-  anthropic: 'var(--anthropic-color)',
-  google: 'var(--google-color)',
-  azure: 'var(--azure-color)',
-  openrouter: 'var(--openrouter-color)',
-};
-
-const providerDisplayNames: Record<string, string> = {
-  aws_bedrock: 'AWS Bedrock',
-  openai: 'OpenAI',
-  anthropic: 'Anthropic',
-  google: 'Google',
-  azure: 'Azure',
-  openrouter: 'OpenRouter',
-};
-
-const capabilityIcons: Record<string, string> = {
-  text: '📝',
-  vision: '🖼️',
-  audio: '🎧',
-  embedding: '📊',
-};
 
 function formatPrice(price: number | null): string {
   if (price === null) return '-';
@@ -57,21 +34,15 @@ export function ModelCard({ model, index }: ModelCardProps) {
       className="model-card"
       style={{
         animationDelay: `${index * 0.05}s`,
-        '--provider-color': providerColors[model.provider] || 'var(--accent-cyan)',
+        '--provider-color': getProviderColor(model.provider),
       } as React.CSSProperties}
     >
       <div className="card-header">
         <div className="provider-badge">
-          <span>{providerDisplayNames[model.provider] || model.provider}</span>
+          <span>{getProviderDisplayName(model.provider)}</span>
         </div>
         <div className="card-badges">
-          <span className="capability-icons">
-            {model.capabilities.map((cap) => (
-              <span key={cap} title={cap}>
-                {capabilityIcons[cap] || ''}
-              </span>
-            ))}
-          </span>
+          <CapabilityList capabilities={model.capabilities} />
           {model.context_length && (
             <span className="context-badge mono">
               {formatNumber(model.context_length)} ctx
@@ -156,13 +127,13 @@ export function ModelCard({ model, index }: ModelCardProps) {
         <div
           className="price-bar input-bar"
           style={{
-            width: `${Math.min(((model.pricing.input || 0) / 20) * 100, 100)}%`,
+            width: `${calculatePriceBarWidth(model.pricing.input, 'input')}%`,
           }}
         ></div>
         <div
           className="price-bar output-bar"
           style={{
-            width: `${Math.min(((model.pricing.output || 0) / 80) * 100, 100)}%`,
+            width: `${calculatePriceBarWidth(model.pricing.output, 'output')}%`,
           }}
         ></div>
       </div>

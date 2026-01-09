@@ -1,19 +1,14 @@
-import type { Filters, ProviderInfo } from '../types/pricing';
+import type { Filters, ProviderInfo, ModelFamily } from '../types/pricing';
+import { FILTER_CAPABILITIES } from '../config';
 
 interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   providers: ProviderInfo[];
+  families: ModelFamily[];
 }
 
-const CAPABILITIES = [
-  { value: 'text', label: '文本' },
-  { value: 'vision', label: '视觉' },
-  { value: 'audio', label: '音频' },
-  { value: 'embedding', label: '嵌入' },
-];
-
-export function FilterBar({ filters, onFiltersChange, providers }: FilterBarProps) {
+export function FilterBar({ filters, onFiltersChange, providers, families }: FilterBarProps) {
   return (
     <div className="filter-bar">
       <div className="filter-group">
@@ -35,6 +30,24 @@ export function FilterBar({ filters, onFiltersChange, providers }: FilterBarProp
       </div>
 
       <div className="filter-group">
+        <label className="filter-label">模型家族</label>
+        <select
+          className="filter-select"
+          value={filters.family || ''}
+          onChange={(e) =>
+            onFiltersChange({ ...filters, family: e.target.value || null })
+          }
+        >
+          <option value="">全部</option>
+          {families.map((f) => (
+            <option key={f.name} value={f.name}>
+              {f.name} ({f.count})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="filter-group">
         <label className="filter-label">能力</label>
         <select
           className="filter-select"
@@ -44,7 +57,7 @@ export function FilterBar({ filters, onFiltersChange, providers }: FilterBarProp
           }
         >
           <option value="">全部</option>
-          {CAPABILITIES.map((c) => (
+          {FILTER_CAPABILITIES.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
             </option>

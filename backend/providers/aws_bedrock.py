@@ -4,18 +4,28 @@ import asyncio
 import logging
 import re
 from datetime import datetime
+from typing import Dict, List, Tuple
 
 import httpx
 
+from config import settings
 from models import ModelPricing, Pricing, BatchPricing
-from .base import BaseProvider
+from .base import BaseProvider, detect_modalities
 from .registry import ProviderRegistry
 
 logger = logging.getLogger(__name__)
 
-# AWS Pricing API endpoints (public, no auth required)
-BEDROCK_URL = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/us-east-1/index.json"
-BEDROCK_FM_URL = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrockFoundationModels/current/us-east-1/index.json"
+# Model name patterns: (regex, model_id, display_name)
+# Used to normalize model names from AWS API which sometimes omit vendor prefixes
+# Order matters - more specific patterns first
+MODEL_PATTERNS: List[Tuple[str, str, str]] = [
+    # DeepSeek - AWS API returns just "R1" without vendor prefix
+    (r"^r1$", "deepseek-r1", "DeepSeek R1"),
+    (r"^v3$", "deepseek-v3", "DeepSeek V3"),
+    (r"deepseek.?r1", "deepseek-r1", "DeepSeek R1"),
+    (r"deepseek.?v3", "deepseek-v3", "DeepSeek V3"),
+    (r"deepseek", "deepseek", "DeepSeek"),
+]
 
 
 class AWSBedrockProvider(BaseProvider):
@@ -24,13 +34,13 @@ class AWSBedrockProvider(BaseProvider):
     name = "aws_bedrock"
     display_name = "AWS Bedrock"
 
-    async def fetch(self) -> list[ModelPricing]:
+    async def fetch(self) -> List[ModelPricing]:
         """Fetch pricing from both Bedrock sources."""
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=settings.http_timeout) as client:
             # Fetch both sources concurrently
             bedrock_resp, fm_resp = await asyncio.gather(
-                client.get(BEDROCK_URL),
-                client.get(BEDROCK_FM_URL),
+                client.get(settings.bedrock_url),
+                client.get(settings.bedrock_fm_url),
             )
             bedrock_resp.raise_for_status()
             fm_resp.raise_for_status()
@@ -38,7 +48,7 @@ class AWSBedrockProvider(BaseProvider):
             bedrock_data = bedrock_resp.json()
             fm_data = fm_resp.json()
 
-        models: dict[str, ModelPricing] = {}
+        models: Dict[str, ModelPricing] = {}
 
         # Parse AmazonBedrock data
         self._parse_bedrock_data(bedrock_data, models)
@@ -49,7 +59,7 @@ class AWSBedrockProvider(BaseProvider):
         return list(models.values())
 
     def _parse_bedrock_data(
-        self, data: dict, models: dict[str, ModelPricing]
+        self, data: dict, models: Dict[str, ModelPricing]
     ) -> None:
         """Parse AmazonBedrock pricing data."""
         products = data.get("products", {})
@@ -82,18 +92,24 @@ class AWSBedrockProvider(BaseProvider):
             is_batch = "batch" in usage_type.lower() or "batch" in description.lower()
 
             # Create or update model
-            model_id = self._normalize_model_id(model_name)
+            model_id, display_name = self._normalize_model_id(model_name)
             full_id = f"{self.name}:{model_id}"
 
             if full_id not in models:
+                # Detect capabilities from model name
+                capabilities = self._detect_capabilities(display_name)
+                input_mods, output_mods = detect_modalities(capabilities, display_name)
+
                 models[full_id] = ModelPricing(
                     id=full_id,
                     provider=self.name,
                     model_id=model_id,
-                    model_name=model_name,
+                    model_name=display_name,
                     pricing=Pricing(),
                     batch_pricing=None,
-                    capabilities=["text"],
+                    capabilities=capabilities,
+                    input_modalities=input_mods,
+                    output_modalities=output_mods,
                     last_updated=datetime.now(),
                 )
 
@@ -114,7 +130,7 @@ class AWSBedrockProvider(BaseProvider):
                     model.pricing.output = price_usd
 
     def _parse_fm_data(
-        self, data: dict, models: dict[str, ModelPricing]
+        self, data: dict, models: Dict[str, ModelPricing]
     ) -> None:
         """Parse AmazonBedrockFoundationModels pricing data."""
         products = data.get("products", {})
@@ -154,28 +170,24 @@ class AWSBedrockProvider(BaseProvider):
                 continue
 
             # Create or update model
-            model_id = self._normalize_model_id(model_name)
+            model_id, display_name = self._normalize_model_id(model_name)
             full_id = f"{self.name}:{model_id}"
 
             if full_id not in models:
                 # Detect capabilities from model name
-                capabilities = ["text"]
-                name_lower = model_name.lower()
-                if any(x in name_lower for x in ["vision", "vl", "image", "stable"]):
-                    capabilities.append("vision")
-                if any(x in name_lower for x in ["audio", "sonic", "voxtral"]):
-                    capabilities.append("audio")
-                if "embed" in name_lower:
-                    capabilities = ["embedding"]
+                capabilities = self._detect_capabilities(display_name)
+                input_mods, output_mods = detect_modalities(capabilities, display_name)
 
                 models[full_id] = ModelPricing(
                     id=full_id,
                     provider=self.name,
                     model_id=model_id,
-                    model_name=model_name,
+                    model_name=display_name,
                     pricing=Pricing(),
                     batch_pricing=None,
                     capabilities=capabilities,
+                    input_modalities=input_mods,
+                    output_modalities=output_mods,
                     last_updated=datetime.now(),
                 )
 
@@ -201,13 +213,98 @@ class AWSBedrockProvider(BaseProvider):
                 if model.pricing.output is None:
                     model.pricing.output = price_usd
 
-    def _normalize_model_id(self, name: str) -> str:
-        """Normalize model name to ID format."""
-        # Lowercase, replace spaces with hyphens, remove special chars
-        model_id = name.lower()
-        model_id = re.sub(r"[^a-z0-9\s\-\.]", "", model_id)
+    def _detect_capabilities(self, display_name: str) -> List[str]:
+        """Detect model capabilities from display name.
+
+        Based on official documentation and third-party verification (artificialanalysis.ai).
+
+        Returns:
+            List of capability strings.
+        """
+        name_lower = display_name.lower()
+
+        # Image generation models - no text capability
+        if any(x in name_lower for x in ["stable diffusion", "sdxl", "titan image"]):
+            return ["image_generation"]
+
+        # Embedding models - no text capability
+        if "embed" in name_lower:
+            return ["embedding"]
+
+        # Start with text as base
+        capabilities = ["text"]
+
+        # Vision capability - based on official documentation
+        if any(x in name_lower for x in ["vision", "vl", "image"]):
+            capabilities.append("vision")
+        # Claude 3/3.5/4+ have vision; older versions (2.x, instant) don't
+        elif "claude" in name_lower:
+            vision_patterns = [
+                "claude 3", "claude-3", "claude 4", "claude-4", "claude 5", "claude-5",
+                "haiku 4", "haiku-4", "sonnet 4", "sonnet-4", "opus 4", "opus-4",
+            ]
+            if any(x in name_lower for x in vision_patterns):
+                capabilities.append("vision")
+        # Llama 4 has native multimodal vision
+        elif "llama 4" in name_lower or "llama-4" in name_lower:
+            capabilities.append("vision")
+        # Mistral Large 3, Pixtral have vision
+        elif any(x in name_lower for x in ["mistral large 3", "mistral-large-3", "pixtral"]):
+            capabilities.append("vision")
+
+        # Audio capability
+        if any(x in name_lower for x in ["audio", "sonic", "voxtral"]):
+            capabilities.append("audio")
+
+        # Reasoning capability - models with chain-of-thought or extended thinking
+        # Based on official documentation and artificialanalysis.ai
+        reasoning_patterns = [
+            "deepseek r1", "deepseek-r1", " r1",
+            "deepseek v3.1", "deepseek-v3.1",  # V3.1 has hybrid thinking
+        ]
+        # Claude advanced models with extended thinking capability
+        # Opus 4/4.5, Sonnet 4, Claude 3.5 Sonnet, Claude 3.7
+        claude_reasoning_patterns = [
+            "claude 3.5 sonnet", "claude-3.5-sonnet", "claude-3-5-sonnet",
+            "claude 3.7", "claude-3.7", "claude-3-7",
+            "claude 4", "claude-4",
+            "claude opus 4", "claude sonnet 4", "claude haiku 4",
+            "opus 4", "sonnet 4",
+        ]
+        if any(x in name_lower for x in reasoning_patterns):
+            capabilities.append("reasoning")
+        elif any(x in name_lower for x in claude_reasoning_patterns):
+            capabilities.append("reasoning")
+
+        # Tool use capability (function calling)
+        # Based on official documentation
+        tool_use_patterns = [
+            "claude", "llama", "mistral", "command",
+            "nova", "titan",  # Amazon models
+            "deepseek",  # DeepSeek models support function calling
+        ]
+        if any(x in name_lower for x in tool_use_patterns):
+            capabilities.append("tool_use")
+
+        return capabilities
+
+    def _normalize_model_id(self, name: str) -> Tuple[str, str]:
+        """Normalize model name to ID format and return display name.
+
+        Returns:
+            Tuple of (model_id, display_name)
+        """
+        name_lower = name.lower()
+        
+        # Check against known patterns first
+        for pattern, model_id, display_name in MODEL_PATTERNS:
+            if re.search(pattern, name_lower, re.IGNORECASE):
+                return model_id, display_name
+        
+        # Default: lowercase, replace spaces with hyphens, remove special chars
+        model_id = re.sub(r"[^a-z0-9\s\-\.]", "", name_lower)
         model_id = re.sub(r"\s+", "-", model_id)
-        return model_id
+        return model_id, name
 
 
 # Register provider
